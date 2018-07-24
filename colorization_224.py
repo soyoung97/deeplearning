@@ -2,7 +2,7 @@ import tensorflow as tf
 import h5py
 import matplotlib.pyplot as plt
 import numpy as np
-import random
+
 # Path of saved model
 save_file = '/home/test/deeplearning/model.ckpt'
 
@@ -12,22 +12,16 @@ file_path = '/home/test/deeplearning/MyFile.h5'
 fr = h5py.File(file_path, 'r')
 binary_image = np.array(fr.get('binary_img'))
 color_image = np.array(fr.get('color_img'))
-c = list(zip(binary_image, color_image))
-random.shuffle(c)
-binary_image, color_image = zip(*c)
-
-binary_image = np.array(binary_image)
-color_image = np.array(color_image)
 
 # Options
-total_epoch = 500
+total_epoch = 1000
 batch_size = 64
-n_input = 112*112*3
+n_input = 224*224*3
 learning_rate = 0.0002
 
 # Neural Net Basic Models
-ph_color_image = tf.placeholder(tf.float32, [None, 112, 112, 3])
-ph_binary_image = tf.placeholder(tf.float32, [None, 112, 112, 3])
+ph_color_image = tf.placeholder(tf.float32, [None, 224, 224, 3])
+ph_binary_image = tf.placeholder(tf.float32, [None, 224, 224, 3])
 
 
 def encoder(inputs):
@@ -102,9 +96,7 @@ dif_image = tf.square(tf.subtract(G_image, ph_color_image))
 
 match_img_loss = tf.reduce_mean(tf.square(tf.subtract(tf.reduce_mean(G_image, axis=3), tf.reduce_mean(ph_binary_image, axis=3))))
 
-#CHANGING LOSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS PART
-loss_G = 5* tf.reduce_mean(dif_image) + 0.1 * match_img_loss
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+loss_G = 5 * tf.reduce_mean(dif_image) + match_img_loss
 
 vars_E = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
                            scope='encoder')
@@ -120,7 +112,7 @@ saver = tf.train.Saver()
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 
-total_batch = int(5100 / batch_size)
+total_batch = int(3000 / batch_size)
 cost = 0
 print("================================")
 print('Learning Started......')
@@ -142,7 +134,7 @@ for epoch in range(total_epoch):
     print('Epoch: {}'.format(epoch))
     print('Loss: {}'.format(cost))
 
-    if epoch == 0 or (epoch + 1) % 1 == 0:
+    if epoch == 0 or (epoch + 1) % 10 == 0:
         sample_size = 10
 
         samples = sess.run(G_image,
