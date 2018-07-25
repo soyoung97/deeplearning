@@ -18,9 +18,9 @@ search_url = "https://api.cognitive.microsoft.com/bing/v7.0/images/search"
 headers = {"Ocp-Apim-Subscription-Key" : subscription_key1}
 
 #settings for h5py
-fw = h5py.File('/home/test/deeplearning/GrassFile.h5','w')
-input_binary = np.zeros([5100, 112, 112, 3])
-input_color = np.zeros([5100, 112, 112, 3])
+fw = h5py.File('/home/soyoung/deeplearning/model/TestFile.h5','w')
+input_binary = np.zeros([1, 112, 112, 3])
+input_color = np.zeros([1, 112, 112, 3])
 next_offset = 0
 idx = 0
 #picnic = 573
@@ -46,7 +46,7 @@ idx = 0
 
 
 search_term = ["picnic","picnic","picnic","picnic","view","view","view","waterfall","waterfall","waterfall","desert","desert","national park","national park","island","island","beach","beach","city","city","sand","sand","farm","farm","landspace","landscape","building","forest","historic sites", "scenery", "jungle", "nature","grassland","la"]
-for iterations in range(len(search_term)):
+for iterations in range(1):#range(len(search_term)):
     if (iterations != 0) and (search_term[iterations] == search_term[iterations -1]):
         off = next_offset
     else:
@@ -66,7 +66,8 @@ for iterations in range(len(search_term)):
         image = image.resize((112,112))
         #settings for saving color image
         numpy_img = np.array(image)
-        input_color[idx] = numpy_img
+        if (idx ==0):
+            input_color[idx] = numpy_img
         
         pix = image.load()
        # string = "/home/test/madcamp/portrait/image"+str(i)+"_c.jpeg"
@@ -81,7 +82,8 @@ for iterations in range(len(search_term)):
                 pix[x,y] = (r,r,r)
 
         tf_numpy_img = np.array(image)
-        input_binary[idx] = tf_numpy_img
+        if idx == 0:
+            input_binary[idx] = tf_numpy_img
         #string_b = "/home/test/madcamp/portrait/image"+str(i)+"_b.jpeg"
        # binary_arr.save(string_b,"jpeg")
         #image.save(string_b, "jpeg")
