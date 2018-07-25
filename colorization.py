@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 # Path of saved model
-save_file = '/home/test/deeplearning/model.ckpt'
+save_file = '/home/test/deeplearning/model_night.ckpt'
 
 # Path of input images
-file_path = '/home/test/deeplearning/MyFile.h5'
+file_path = '/home/test/deeplearning/GrassFile.h5'
 
 fr = h5py.File(file_path, 'r')
 binary_image = np.array(fr.get('binary_img'))
@@ -20,10 +20,10 @@ binary_image = np.array(binary_image)
 color_image = np.array(color_image)
 
 # Options
-total_epoch = 500
+total_epoch = 3000
 batch_size = 64
 n_input = 112*112*3
-learning_rate = 0.0002
+learning_rate = 0.00002
 
 # Neural Net Basic Models
 ph_color_image = tf.placeholder(tf.float32, [None, 112, 112, 3])
@@ -103,7 +103,7 @@ dif_image = tf.square(tf.subtract(G_image, ph_color_image))
 match_img_loss = tf.reduce_mean(tf.square(tf.subtract(tf.reduce_mean(G_image, axis=3), tf.reduce_mean(ph_binary_image, axis=3))))
 
 #CHANGING LOSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS PART
-loss_G = 5* tf.reduce_mean(dif_image) + 0.1 * match_img_loss
+loss_G = tf.reduce_mean(dif_image) + 0.01 * match_img_loss
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 vars_E = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,
@@ -142,7 +142,7 @@ for epoch in range(total_epoch):
     print('Epoch: {}'.format(epoch))
     print('Loss: {}'.format(cost))
 
-    if epoch == 0 or (epoch + 1) % 1 == 0:
+    if epoch == 0 or (epoch + 1) % 10 == 0:
         sample_size = 10
 
         samples = sess.run(G_image,
